@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import { ProductWithPrice } from '@/types';
+import AuthModal from '@/components/AuthModal';
 
 interface ModalProviderProps {
   products: ProductWithPrice[];
@@ -19,5 +20,9 @@ export default function ModalProvider({ products }: ModalProviderProps) {
     return null;
   }
 
-  return <>ModalProvider</>;
+  return (
+    <>
+      <AuthModal />
+    </>
+  );
 }
