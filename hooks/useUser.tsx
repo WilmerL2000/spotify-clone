@@ -35,6 +35,10 @@ export const MyUserContextProvider = (props: Props) => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
 
+  /**
+   * The above code defines two functions, `getUserDetails` and `getSubscription`, which make queries to
+   * a Supabase database to retrieve user details and subscription information respectively.
+   */
   const getUserDetails = () => supabase.from('users').select('*').single();
   const getSubscription = () =>
     supabase
