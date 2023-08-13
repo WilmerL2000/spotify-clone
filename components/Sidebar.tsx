@@ -8,12 +8,14 @@ import { useMemo } from 'react';
 import Box from './Box';
 import SidebarItem from './SidebarItem';
 import Library from './Library';
+import { Song } from '@/types';
 
 type Props = {
   children: React.ReactNode;
+  songs: Song[];
 };
 
-export default function Sidebar({ children }: Props) {
+export default function Sidebar({ children, songs }: Props) {
   const pathname = usePathname();
 
   const routes = useMemo(
@@ -56,7 +58,7 @@ export default function Sidebar({ children }: Props) {
           </div>
         </Box>
         <Box className="overflow-y-auto h-full">
-          <Library />
+          <Library songs={songs} />
         </Box>
       </div>
 
