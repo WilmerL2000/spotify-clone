@@ -12,6 +12,8 @@ import useAuthModal from '@/hooks/useAuthModal';
 import { useUser } from '@/hooks/useUser';
 import { FaUserAlt } from 'react-icons/fa';
 import usePlayer from '@/hooks/usePlayer';
+import { AiOutlinePlus } from 'react-icons/ai';
+import useUploadModal from '@/hooks/useUploadModal ';
 
 type Props = { children: React.ReactNode; className?: string };
 
@@ -23,6 +25,7 @@ export default function Header({ children, className }: Props) {
   const supabaseClient = useSupabaseClient();
   const { user } = useUser();
   const player = usePlayer();
+  const uploadModal = useUploadModal();
 
   /**
    * The function `handleLogout` signs the user out, resets a player, refreshes the router, and displays
@@ -36,6 +39,14 @@ export default function Header({ children, className }: Props) {
     if (error) {
       toast.error(error.message);
     }
+  };
+
+  const onClick = () => {
+    if (!user) {
+      return authModal.onOpen();
+    }
+
+    return uploadModal.onOpen();
   };
 
   return (
@@ -109,6 +120,24 @@ export default function Header({ children, className }: Props) {
           >
             <BiSearch className="text-black" size={20} />
           </button>
+          {user && (
+            <button
+              onClick={onClick}
+              className="
+              rounded-full 
+              p-2 
+              bg-white 
+              flex 
+              items-center 
+              justify-center 
+              cursor-pointer 
+              hover:opacity-75 
+              transition
+            "
+            >
+              <AiOutlinePlus className="text-black" size={20} />
+            </button>
+          )}
         </div>
         <div className="flex justify-between items-center gap-x-4">
           {user ? (
