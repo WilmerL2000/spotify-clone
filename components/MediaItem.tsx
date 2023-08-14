@@ -40,13 +40,14 @@ export default function MediaItem({ data, onClick }: Props) {
           min-h-[48px] 
           min-w-[48px] 
           overflow-hidden
+          group
         "
       >
         <Image
           fill
           src={imageUrl || '/images/music-placeholder.png'}
           alt="MediaItem"
-          className="object-cover"
+          className="object-cover group-hover:scale-110 duration-300"
         />
       </div>
       <div className="flex flex-col gap-y-1 overflow-hidden">

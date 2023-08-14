@@ -11,6 +11,7 @@ import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import useAuthModal from '@/hooks/useAuthModal';
 import { useUser } from '@/hooks/useUser';
 import { FaUserAlt } from 'react-icons/fa';
+import usePlayer from '@/hooks/usePlayer';
 
 type Props = { children: React.ReactNode; className?: string };
 
@@ -21,6 +22,7 @@ export default function Header({ children, className }: Props) {
 
   const supabaseClient = useSupabaseClient();
   const { user } = useUser();
+  const player = usePlayer();
 
   /**
    * The function `handleLogout` signs the user out, resets a player, refreshes the router, and displays
@@ -28,7 +30,7 @@ export default function Header({ children, className }: Props) {
    */
   const handleLogout = async () => {
     const { error } = await supabaseClient.auth.signOut();
-    // player.reset();
+    player.reset();
     router.refresh();
 
     if (error) {
@@ -114,10 +116,7 @@ export default function Header({ children, className }: Props) {
               <Button onClick={handleLogout} className="bg-white px-6 py-2">
                 Logout
               </Button>
-              <Button
-                onClick={() => router.push('/account')}
-                className="bg-white"
-              >
+              <Button className="bg-white">
                 <FaUserAlt />
               </Button>
             </div>

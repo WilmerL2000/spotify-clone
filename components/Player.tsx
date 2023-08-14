@@ -5,9 +5,7 @@ import useLoadSongUrl from '@/hooks/useLoadSongUrl';
 import usePlayer from '@/hooks/usePlayer';
 import PlayerContent from './PlayerContent';
 
-type Props = {};
-
-export default function Player({}: Props) {
+export default function Player() {
   const player = usePlayer();
   const { song } = useGetSongById(player.activeId);
 
@@ -29,6 +27,7 @@ export default function Player({}: Props) {
         px-4
       "
     >
+      {/* With *key* prop allows to destroy the component when that value changes and recreate it */}
       <PlayerContent key={songUrl} song={song} songUrl={songUrl} />
     </div>
   );

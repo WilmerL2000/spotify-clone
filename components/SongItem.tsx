@@ -8,15 +8,15 @@ import PlayButton from './PlayButton';
 
 type Props = {
   data: Song;
-  // onClick: (id: string) => void;
+  onClick: (id: string) => void;
 };
 
-export default function SongItem({ data }: Props) {
+export default function SongItem({ data, onClick }: Props) {
   const imagePath = useLoadImage(data);
 
   return (
     <div
-      //   onClick={() => onClick(data.id)}
+      onClick={() => onClick(data.id)}
       className="
         relative 
         group 
@@ -42,10 +42,11 @@ export default function SongItem({ data }: Props) {
           h-full 
           rounded-md 
           overflow-hidden
+          group
         "
       >
         <Image
-          className="object-cover"
+          className="object-cover group-hover:scale-110 transition duration-300"
           src={imagePath || '/images/music-placeholder.png'}
           fill
           alt="Image"

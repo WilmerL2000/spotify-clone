@@ -11,9 +11,208 @@ import usePlayer from '@/hooks/usePlayer';
 
 import LikeButton from './LikeButton';
 import MediaItem from './MediaItem';
+import Slider from './Slider';
 
 type Props = { song: Song; songUrl: string };
 
 export default function PlayerContent({ song, songUrl }: Props) {
-  return <div>PlayerContent</div>;
+  const player = usePlayer();
+  const [volume, setVolume] = useState(1);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const Icon = isPlaying ? BsPauseFill : BsPlayFill;
+  const VolumeIcon = volume === 0 ? HiSpeakerXMark : HiSpeakerWave;
+
+  /**
+   * The `onPlayNext` function checks if there is a next song in the playlist and sets the active song ID
+   * to the next song or the first song if there are no more songs.
+   * @returns The function `onPlayNext` returns either nothing (`undefined`) or the result of calling
+   * `player.setId(nextSong)`.
+   */
+  const onPlayNext = () => {
+    if (player.ids.length === 0) {
+      return;
+    }
+
+    /* The code is finding the index of the currently active song in the `player.ids` array using the
+`findIndex` method. It then assigns the next song in the playlist to the `nextSong` variable by
+accessing the element at the index `currentIndex + 1` in the `player.ids` array. */
+    const currentIndex = player.ids.findIndex((id) => id === player.activeId);
+    const nextSong = player.ids[currentIndex + 1];
+
+    /* The code block `if (!nextSong) { return player.setId(player.ids[0]); }` is checking if there is a
+  next song in the playlist. If there is no next song, it sets the active song ID to the first song
+  in the playlist using the `player.setId()` function. This ensures that when the user clicks on the
+  "Next" button, it will play the first song in the playlist if there are no more songs after the
+  current one. */
+    if (!nextSong) {
+      return player.setId(player.ids[0]);
+    }
+
+    player.setId(nextSong);
+  };
+
+  /**
+   * The function `onPlayPrevious` is used to play the previous song in a playlist.
+   * @returns The function `onPlayPrevious` returns either `undefined` or it sets the active song ID in
+   * the `player` object to the previous song ID.
+   */
+  const onPlayPrevious = () => {
+    if (player.ids.length === 0) {
+      return;
+    }
+
+    const currentIndex = player.ids.findIndex((id) => id === player.activeId);
+    const previousSong = player.ids[currentIndex - 1];
+
+    if (!previousSong) {
+      return player.setId(player.ids[player.ids.length - 1]);
+    }
+
+    player.setId(previousSong);
+  };
+
+  /* The code `const [play, { pause, sound }] = useSound(songUrl, {...})` is using the `useSound` hook
+from the `use-sound` library to handle playing audio. */
+  const [play, { pause, sound }] = useSound(songUrl, {
+    volume: volume,
+    onplay: () => setIsPlaying(true),
+    onend: () => {
+      setIsPlaying(false);
+      onPlayNext();
+    },
+    onpause: () => setIsPlaying(false),
+    format: ['mp3'],
+  });
+
+  useEffect(() => {
+    sound?.play();
+
+    return () => {
+      sound?.unload();
+    };
+  }, [sound]);
+
+  /**
+   * The handlePlay function checks if the audio is currently playing and either plays or pauses it
+   * accordingly.
+   */
+  const handlePlay = () => {
+    if (!isPlaying) {
+      play();
+    } else {
+      pause();
+    }
+  };
+
+  /**
+   * The function toggleMute toggles the volume between 0 and 1.
+   */
+  const toggleMute = () => {
+    if (volume === 0) {
+      setVolume(1);
+    } else {
+      setVolume(0);
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 h-full">
+      <div className="flex w-full justify-start">
+        <div className="flex items-center gap-x-4">
+          <MediaItem data={song} />
+          <LikeButton songId={song.id} />
+        </div>
+      </div>
+
+      <div
+        className="
+        flex 
+        md:hidden 
+        col-auto 
+        w-full 
+        justify-end 
+        items-center
+      "
+      >
+        <div
+          onClick={handlePlay}
+          className="
+            h-10
+            w-10
+            flex 
+            items-center 
+            justify-center 
+            rounded-full 
+            bg-white 
+            p-1 
+            cursor-pointer
+          "
+        >
+          <Icon size={30} className="text-black" />
+        </div>
+      </div>
+
+      <div
+        className="
+          hidden
+          h-full
+          md:flex 
+          justify-center 
+          items-center 
+          w-full 
+          max-w-[722px] 
+          gap-x-6
+        "
+      >
+        <AiFillStepBackward
+          onClick={onPlayPrevious}
+          size={30}
+          className="
+          text-neutral-400 
+          cursor-pointer 
+          hover:text-white 
+          transition
+        "
+        />
+        <div
+          onClick={handlePlay}
+          className="
+            flex 
+            items-center 
+            justify-center
+            h-10
+            w-10 
+            rounded-full 
+            bg-white 
+            p-1 
+            cursor-pointer
+          "
+        >
+          <Icon size={30} className="text-black" />
+        </div>
+        <AiFillStepForward
+          onClick={onPlayNext}
+          size={30}
+          className="
+          text-neutral-400 
+          cursor-pointer 
+          hover:text-white 
+          transition
+        "
+        />
+      </div>
+
+      <div className="hidden md:flex w-full justify-end pr-2">
+        <div className="flex items-center gap-x-2 w-[120px]">
+          <VolumeIcon
+            onClick={toggleMute}
+            className="cursor-pointer"
+            size={34}
+          />
+          <Slider value={volume} onChange={(value) => setVolume(value)} />
+        </div>
+      </div>
+    </div>
+  );
 }
